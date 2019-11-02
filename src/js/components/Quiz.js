@@ -20,7 +20,8 @@ class Quiz extends Component {
   }
 
   getAnswers = index => {
-    let answers = [data[index].correct_answer, ...data[index].incorrect_answers].map(val => decodeURIComponent(val));
+    let answers = [data[index].correct_answer, ...data[index].incorrect_answers]
+      .map(val => decodeURIComponent(val));
     var currentIndex = answers.length, temporaryValue, randomIndex;
     while (0 !== currentIndex) {
       randomIndex = Math.floor(Math.random() * currentIndex);
@@ -34,7 +35,9 @@ class Quiz extends Component {
 
   handleAnswerClick = answer => {
 
-    const cAnswers = (answer === this.state.correctAnswer ? this.state.correctAnswers + 1 : this.state.correctAnswers);
+    const cAnswers = (answer === this.state.correctAnswer
+      ? this.state.correctAnswers + 1
+      : this.state.correctAnswers);
 
     this.setState({
       answer: answer,
@@ -63,9 +66,28 @@ class Quiz extends Component {
     }
   }
 
+  getAnswerClass = value => {
+    const {
+      answer, correctAnswer
+    } = this.state;
+
+    let answerClass = '';
+    if (answer === value) {
+      answerClass += 'answer';
+    }
+    if (correctAnswer === value) {
+      answerClass += ' correct-answer';
+    }
+    return answerClass;
+  }
+
   render() {
-    const {currentIndex, answer, correctAnswer, correctAnswers, answers} = this.state;
-    const progressQuiz = Math.round((answer == '' ? currentIndex : currentIndex + 1) * 100 / data.length);
+    const {
+      currentIndex, answer, correctAnswer, correctAnswers, answers
+    } = this.state;
+    const progressQuiz = Math.round(
+      (answer == '' ? currentIndex : currentIndex + 1) * 100 / data.length
+    );
     let difficulty = 0;
 
     switch (data[currentIndex].difficulty) {
@@ -87,17 +109,30 @@ class Quiz extends Component {
         <Progress value={progressQuiz} className="progress-quiz" />
         <div className="main">
           <div className="content">
-            <h1 className="quiz-title">{ `Question ${currentIndex + 1} of ${data.length}` }</h1>
-            <p className="category">{decodeURIComponent(data[currentIndex].category)}</p>
-            <ReactStars count={5} size={24} color2={'#000000'} color1={'#cbcccb'} value={difficulty} edit={false} />
-            <h2 className="question">{ decodeURIComponent(data[currentIndex].question) }</h2>
+            <h1 className="quiz-title">
+              { `Question ${currentIndex + 1} of ${data.length}` }
+            </h1>
+            <p className="category">
+              {decodeURIComponent(data[currentIndex].category)}
+            </p>
+            <ReactStars
+              count={5}
+              size={24}
+              color2={'#000000'}
+              color1={'#cbcccb'}
+              value={difficulty}
+              edit={false}
+            />
+            <h2 className="question">
+              { decodeURIComponent(data[currentIndex].question) }
+            </h2>
             <Container className={`answer-container ${answer !== '' && 'answered'}`}>
               <Row>
                 {
                   answers.map((value, index) => (
                     <Col sm={6} xs={12} key={index}>
                       <Button outline 
-                        className={`${answer === value && 'answer'} ${correctAnswer === value && ' correct-answer'}`}
+                        className={this.getAnswerClass(value)}
                         disabled={answer !== ''}
                         onClick={() => this.handleAnswerClick(value)}
                       >
@@ -110,12 +145,23 @@ class Quiz extends Component {
             </Container>
             {answer !== '' &&
               <div className="evaluation">
-                <h1 className="title">{`${answer === correctAnswer ? 'Correct' : 'Sorry'}!`}</h1>
-                <Button outline onClick={this.handleNextClick}>{currentIndex < data.length - 1 ? 'Next Question' : 'Try Again'}</Button>
+                <h1 className="title">
+                  {`${answer === correctAnswer ? 'Correct' : 'Sorry'}!`}
+                </h1>
+                <Button
+                  outline
+                  onClick={this.handleNextClick}
+                >
+                  {currentIndex < data.length - 1 ? 'Next Question' : 'Try Again'}
+                </Button>
               </div>
             }
           </div>
-          <ScoreBar answeredQuiz={answer === '' ? currentIndex : currentIndex + 1} totalQuiz={data.length} correctAnswers={correctAnswers} />
+          <ScoreBar
+            answeredQuiz={answer === '' ? currentIndex : currentIndex + 1}
+            totalQuiz={data.length} 
+            correctAnswers={correctAnswers}
+          />
         </div>
       </div>
     );
